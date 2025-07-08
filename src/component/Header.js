@@ -1,6 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 export default function Header() {
     const [user, setUser] = useState({});
     const nav= useNavigate();
@@ -38,6 +38,7 @@ export default function Header() {
         ) : (
             <p>ㅁㅁ</p>
         )}
+        <Link to={'/MyPage/'+user.userId}>마이페이지</Link>
         <button onClick={logout}>로그아웃</button>
     </div>
   )
