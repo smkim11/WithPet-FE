@@ -55,18 +55,14 @@ export default function NaverMap({ items }) {
   useEffect(() => {
     if (!window.naver || !mapInstance.current || !items || items.length === 0) return;
 
-    // 이전 마커 삭제
-    markersRef.current.forEach(marker => marker.setMap(null));
-    markersRef.current = [];
-
     // 새 마커 추가
-    items.forEach((item) => {
+    items.forEach((item,index) => {
       const mapx = parseFloat(item.mapx.substring(0, 3) + '.' + item.mapx.substring(3));
       const mapy = parseFloat(item.mapy.substring(0, 2) + '.' + item.mapy.substring(2));
       const position = new window.naver.maps.LatLng(mapy, mapx);
 
       const marker = new window.naver.maps.Marker({
-        position,
+        position:position,
         map: mapInstance.current,
         title: item.title,
       });
@@ -86,8 +82,24 @@ export default function NaverMap({ items }) {
       });
 
       markersRef.current.push(marker);
+
+      // 검색 후 첫 마커는 바로 상세보기
+      if (index === 0) {
+      mapInstance.current.setCenter(position);
+      infoWindow.open(mapInstance.current, marker);
+      }
     });
   }, [items]);
+
+  // 검색하면 첫번째 항목으로 지도 이동
+  if (items.length > 0) {
+    const firstItem = items[0];
+    const mapx = parseFloat(firstItem.mapx.substring(0, 3) + '.' + firstItem.mapx.substring(3));
+    const mapy = parseFloat(firstItem.mapy.substring(0, 2) + '.' + firstItem.mapy.substring(2));
+    const position = new window.naver.maps.LatLng(mapy, mapx);
+
+    mapInstance.current.setCenter(position);
+  }
 
   return React.createElement("div", {
     id: "map",
