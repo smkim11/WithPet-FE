@@ -68,7 +68,8 @@ export default function NaverMap({ items }) {
                         (item.category).includes('>')
                         ?(item.category).substring(0,(item.category).indexOf('>'))
                         :(item.category),    
-                  address: item.address
+                  address: item.address,
+                  link:item.link
                 }),
             }).then((res)=>{
                   if(res.ok){ // 200
