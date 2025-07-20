@@ -6,6 +6,7 @@ import MainPage from './component/MainPage';
 import SearchPage from './component/SearchPage';
 import Review from './component/Review';
 import SignUp from './component/SignUp';
+import Bookmark from './component/Bookmark';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
                 <Route path='/SignUp' element={<SignUp/>}></Route>
                 <Route path='/MainPage' element={<MainPage/>}></Route>
                 <Route path='/MyPage/:userId' element={<MyPage/>}></Route>
+                <Route path='/Bookmark/:userId' element={<Bookmark/>}></Route>
                 <Route path='/SearchPage' element={<SearchPage/>}></Route>
                 <Route path='/Review/:title' element={<Review/>}></Route>
             </Routes>

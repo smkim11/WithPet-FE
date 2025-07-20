@@ -33,12 +33,9 @@ export default function Header() {
     }
   return (
     <div>
-        {user != null ? (
-            <p>{user.name}님 환영합니다!</p>
-        ) : (
-            <p>ㅁㅁ</p>
-        )}
-        <Link to={'/MyPage/'+user.userId}>마이페이지</Link>
+        {user.name}님 환영합니다!
+        <Link to={'/MyPage/'+user.userId}>마이페이지</Link> &nbsp;
+        <Link to={'/Bookmark/'+user.userId}>즐겨찾기</Link><br/>
         <button onClick={logout}>로그아웃</button>
     </div>
   )
