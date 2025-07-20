@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
     const [user,setUser] = useState({id:'',pw:''});
@@ -13,7 +13,6 @@ export default function Login() {
             // res.text() -> 서버에서 응답하는 문자열 
             const text = await res.text();
             if(res.ok && text === '로그인 성공'){
-                alert('로그인 성공');
                 console.log('성공');
                 nav('/MainPage');
             }else{
@@ -40,7 +39,7 @@ export default function Login() {
                 </tr>
                 </tbody>
             </table>
-            <button onClick={login}>로그인</button>
+            <button onClick={login}>로그인</button><Link to={'/SignUp'}>회원가입</Link>
         </div>
     )
 }
