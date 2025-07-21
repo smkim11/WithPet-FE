@@ -1,7 +1,10 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import NaverMap from './NaverMap';
+import Header from './Header';
+import { UserContext } from '../context/UserContext';
 
 export default function SearchPage() {
+    const { user } = useContext(UserContext);
     const[keyword, setKeyWord] = useState('');
     const[items,setItems] = useState([]);
 

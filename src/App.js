@@ -7,28 +7,31 @@ import SearchPage from './component/SearchPage';
 import Review from './component/Review';
 import SignUp from './component/SignUp';
 import Bookmark from './component/Bookmark';
+import { UserProvider } from './context/UserContext';
+import Header from './component/Header';
 
 function App() {
   return (
+  <UserProvider> {/*하위 구성요소들에게 사용자 데이터를 제공 */}
     <BrowserRouter>
-        <div>
-
-            <Routes>
-                <Route path='/' element={<Login/>}></Route>
-                <Route path='/SignUp' element={<SignUp/>}></Route>
-                <Route path='/MainPage' element={<MainPage/>}></Route>
-                <Route path='/MyPage/:userId' element={<MyPage/>}></Route>
-                <Route path='/Bookmark/:userId' element={<Bookmark/>}></Route>
-                <Route path='/SearchPage' element={<SearchPage/>}></Route>
-                <Route path='/Review/:title' element={<Review/>}></Route>
-            </Routes>
-        </div>
+        <Header/>
+          <Routes>
+              <Route path='/' element={<Login/>}></Route>
+              <Route path='/SignUp' element={<SignUp/>}></Route>
+              <Route path='/MainPage' element={<MainPage/>}></Route>
+              <Route path='/MyPage/:userId' element={<MyPage/>}></Route>
+              <Route path='/Bookmark/:userId' element={<Bookmark/>}></Route>
+              <Route path='/SearchPage' element={<SearchPage/>}></Route>
+              <Route path='/Review/:title' element={<Review/>}></Route>
+          </Routes>
+      
 
         {/*Footer */}
         <div>
             
         </div>
     </BrowserRouter>
+  </UserProvider>
   );
 }
 

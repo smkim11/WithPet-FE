@@ -1,27 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from './Header'
 import { useParams } from 'react-router-dom'
+import { UserContext } from '../context/UserContext';
 
 export default function Review() {
     const title = useParams({});
-    const [user, setUser] = useState({});
+    const { user } = useContext(UserContext);
     const [review, setReview]= useState({});
     const [reviewList, setReviewList] = useState([]);
-
-    useEffect(() => {
-        fetch('http://localhost/session', {
-            method: 'GET',
-            credentials: 'include'
-        })
-        .then(res => {
-            if (res.ok) return res.json();
-            throw new Error('세션 없음');
-        })
-        .then(data => {
-            console.log('세션 데이터:', data);
-            setUser(data); // user 상태에 로그인 정보 저장
-        })
-    }, []);
 
     useEffect(()=>{
             fetch('http://localhost/selectReview?title='+title.title,{method: "get"})
@@ -53,7 +39,6 @@ export default function Review() {
     }
     return (
         <div>
-            <Header/>
             <h2>리뷰작성</h2>
             <table>
                 <tbody>
@@ -64,8 +49,8 @@ export default function Review() {
                 </tbody>
                 <tbody>
                     <tr>
-                        <th>이름</th>
-                        <td><input type="text" value={user.name} readOnly/></td>
+                        <th>이름</th>                 {/*이름이 넘어오면 출력 아니면 빈칸 */}
+                        <td><input type="text" value={user?.name || ''} readOnly/></td>
                     </tr>
                 </tbody>
                 <tbody>
