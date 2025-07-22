@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import NaverMap from './NaverMap';
-import Header from './Header';
 import { UserContext } from '../context/UserContext';
 
 export default function SearchPage() {
@@ -8,6 +7,7 @@ export default function SearchPage() {
     const[keyword, setKeyWord] = useState('');
     const[items,setItems] = useState([]);
 
+    // 검색시 검색된 가게정보 저장
     function searchPlace(keyword) {
         fetch(`http://localhost/search/${encodeURIComponent(keyword)}`, {
             method: 'GET',
@@ -18,6 +18,24 @@ export default function SearchPage() {
             console.log("검색 결과:", data);
             setItems(data.items)
             // data.items를 활용하여 화면에 출력
+            
+            // 검색된 가게정보들 반복문으로 저장
+            for(let i=0;i<data.items.length;i++){
+                const cleanTitle =(data.items[i].title).replace(/<[^>]*>?/gm, '');
+                fetch("http://localhost/insertStore",{
+                method:"post", headers:{"Content-Type":"application/json"},
+                body: JSON.stringify({
+                  title: cleanTitle,
+                  category:
+                        (data.items[i].category).includes('>')
+                        ?(data.items[i].category).substring(0,(data.items[i].category).indexOf('>'))
+                        :(data.items[i].category),    
+                  address: data.items[i].address,
+                  link:data.items[i].link
+                }),
+            })
+            }
+            
         });
     }
 
