@@ -6,6 +6,8 @@ export default function Header() {
     const nav= useNavigate();
     const location = useLocation();
 
+    // 로그아웃상태면 안보이게
+    if (!user) return null;
     // 로딩중일땐 안보이게
     if (loading) return null;
     // 로그인창과 회원가입창에선 헤더 숨김
@@ -28,7 +30,7 @@ export default function Header() {
     return (
         
         <div>
-            {user.name}님 환영합니다!
+            {user?.name}님 환영합니다!
             <Link to={'/MyPage/'+user.userId}>마이페이지</Link> &nbsp;
             <Link to={'/Bookmark/'+user.userId}>즐겨찾기</Link><br/>
             <button onClick={logout}>로그아웃</button>
