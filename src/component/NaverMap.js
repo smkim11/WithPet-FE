@@ -1,7 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
 
 export default function NaverMap({ items }) {
+  const { user } = useContext(UserContext);
+  const userId = user?.userId;
+  const [storeId,setStoreId] = useState();
+  const [bookmarkedStores, setBookmarkedStores] = useState([]);
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const markersRef = useRef([]);
@@ -51,37 +56,27 @@ export default function NaverMap({ items }) {
     return () => {
       document.head.removeChild(script);
     };
-  }, []);
+    }, []);
+    
+  // 로그인한 사용자가 즐겨찾기한 가게번호 리스트
+  useEffect(() => {
+  fetch('http://localhost/selectStoreIdByUserId?userId='+userId)
+    .then(res => res.json())
+    .then(data => setBookmarkedStores(data)); // [1, 2, 3, 4] 형태
+  }, [userId]);
 
-  // 마커에서 리뷰 클릭하면 가게정보를 DB에 저장하고 리뷰페이지로 이동
-  function insertStoreSendReview(item){
-        setTimeout(() => {
-          const reviewBtn = document.getElementById("review-btn");
-          if (reviewBtn) {
-            const cleanTitle =(item.title).replace(/<[^>]*>?/gm, '');
-            reviewBtn.addEventListener("click", () => {
-              fetch("http://localhost/insertStore",{
-                method:"post", headers:{"Content-Type":"application/json"},
-                body: JSON.stringify({
-                  title: cleanTitle,
-                  category:
-                        (item.category).includes('>')
-                        ?(item.category).substring(0,(item.category).indexOf('>'))
-                        :(item.category),    
-                  address: item.address,
-                  link:item.link
-                }),
-            }).then((res)=>{
-                  if(res.ok){ // 200
-                      nav(`/Review/${cleanTitle}`); 
-                  }else{ // 300, 400, 500
-                  }
-                });
-              });
-          }
-        }, 0);
+  // 가게 즐겨찾기 저장
+  window.insertBookmark=function(title,userId){
+    fetch('http://localhost/selectStoreId?title='+title,{method: "get"})
+    .then((res)=>(res.json()))
+    .then(data=>{
+        fetch("http://localhost/insertBookmark",{
+        method:"post", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({userId:userId,storeId:data})
+        });{setStoreId(data)}
+    })
   }
-
+  
   // 제목에 붙어있는 불필요한 문자들을 제거
   function stripHtmlTags(str) {
     if (!str) return '';
@@ -89,47 +84,63 @@ export default function NaverMap({ items }) {
   }   
   // items 바뀔 때마다 마커 다시 그림
   useEffect(() => {
-    if (!window.naver || !mapInstance.current || !items || items.length === 0) return;
+  if (!window.naver || !mapInstance.current || !items || items.length === 0) return;
 
-    // 새 마커 추가
-    items.forEach((item,index) => {
-      const mapx = parseFloat(item.mapx.substring(0, 3) + '.' + item.mapx.substring(3));
-      const mapy = parseFloat(item.mapy.substring(0, 2) + '.' + item.mapy.substring(2));
-      const position = new window.naver.maps.LatLng(mapy, mapx);
+  markersRef.current.forEach(marker => marker.setMap(null));
+  markersRef.current = [];
 
-      const marker = new window.naver.maps.Marker({
-        position:position,
-        map: mapInstance.current,
-        title: item.title,
-      });
-      const cleanTitle = stripHtmlTags(item.title);
-      const infoWindow = new window.naver.maps.InfoWindow({
-        content: `
-          <div style="padding:10px;">
-            <strong>${cleanTitle}</strong><br/>
-            <span>${item.category}</span><br/>
-            <span>${item.address}</span><br/>
-            <a href="${item.link}" target="_blank">상세정보</a><br/>
-            <button id="review-btn">리뷰</button>
-          </div>`,
-      });
+  items.forEach((item, index) => {
+    const mapx = parseFloat(item.mapx.substring(0, 3) + '.' + item.mapx.substring(3));
+    const mapy = parseFloat(item.mapy.substring(0, 2) + '.' + item.mapy.substring(2));
+    const position = new window.naver.maps.LatLng(mapy, mapx);
+    const cleanTitle = stripHtmlTags(item.title);
 
-      
-      window.naver.maps.Event.addListener(marker, "click", () => {
-        infoWindow.open(mapInstance.current, marker);
-        insertStoreSendReview(item);
-      });
+    // 먼저 storeId 조회
+    fetch(`http://localhost/selectStoreId?title=${cleanTitle}`)
+      .then(res => res.json())
+      .then(storeId => {
+        const isBookmarked = bookmarkedStores.includes(storeId);
 
-      markersRef.current.push(marker);
+        // 마커 아이콘 조건
+        const markerIcon = isBookmarked
+          ? 'https://example.com/star-icon.png'
+          : null; // 기본 마커
 
-      // 검색 후 첫 마커는 바로 상세보기
-      if (index === 0) {
+        const marker = new window.naver.maps.Marker({
+          position: position,
+          map: mapInstance.current,
+          title: cleanTitle,
+          icon: markerIcon,
+        });
+
+        const infoWindow = new window.naver.maps.InfoWindow({
+          content: `
+            <div style="padding:10px;">
+              <strong>${cleanTitle}</strong><br/>
+              <span>${item.category}</span><br/>
+              <span>${item.address}</span><br/>
+              <a href="${item.link}" target="_blank">상세정보</a><br/>
+              <a href="/Review/${cleanTitle}">리뷰</a><br/>
+              <span style="color:${isBookmarked ? 'gold' : 'gray'};">
+                ${isBookmarked ? '⭐ 즐겨찾기됨' : `<button onclick="insertBookmark('${cleanTitle}',${userId})">즐겨찾기</button>`}
+              </span>
+            </div>`,
+        });
+
+        window.naver.maps.Event.addListener(marker, "click", () => {
+          infoWindow.open(mapInstance.current, marker);
+        });
+
+        // 첫 번째 마커 자동 열기
+        if (index === 0) {
           mapInstance.current.setCenter(position);
           infoWindow.open(mapInstance.current, marker);
-          insertStoreSendReview(item);
-      }
-    });
-  }, [items]);
+        }
+
+        markersRef.current.push(marker);
+      });
+  });
+}, [items, bookmarkedStores]);
 
   // 검색하면 첫번째 항목으로 지도 이동
   if (items.length > 0) {
