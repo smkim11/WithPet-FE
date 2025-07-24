@@ -28,7 +28,7 @@ export default function SearchPage() {
                   title: cleanTitle,
                   category:
                         (data.items[i].category).includes('>')
-                        ?(data.items[i].category).substring(0,(data.items[i].category).indexOf('>'))
+                        ?(data.items[i].category).substring((data.items[i].category).lastIndexOf('>')+1)
                         :(data.items[i].category),    
                   address: data.items[i].address,
                   link:data.items[i].link
