@@ -76,7 +76,26 @@ export default function NaverMap({ items }) {
         });{setStoreId(data)}
     })
   }
-  
+
+  // 즐겨찾기 삭제
+  window.deleteBookmark=function(userId,storeId){
+        if(window.confirm('삭제하시겠습니까?')){
+            fetch('http://localhost/deleteBookmark', {method:'DELETE',
+              headers:{"Content-Type":"application/json"},
+              body: JSON.stringify({userId:userId,storeId:storeId})})
+            .then((res)=>{
+                if(res.ok){
+                  // 삭제 후 새로고침
+                  window.location.reload();
+                }else{
+                    alert('삭제실패');
+                }
+            })
+        }else{
+            alert('삭제취소');
+        }
+    }
+
   // 제목에 붙어있는 불필요한 문자들을 제거
   function stripHtmlTags(str) {
     if (!str) return '';
@@ -122,7 +141,8 @@ export default function NaverMap({ items }) {
               <a href="${item.link}" target="_blank">상세정보</a><br/>
               <a href="/Review/${cleanTitle}">리뷰</a><br/>
               <span style="color:${isBookmarked ? 'gold' : 'gray'};">
-                ${isBookmarked ? '⭐ 즐겨찾기됨' : `<button onclick="insertBookmark('${cleanTitle}',${userId})">즐겨찾기</button>`}
+                ${isBookmarked ? `<button onclick="deleteBookmark('${userId}',${storeId})">⭐ 즐겨찾기됨</button>` : 
+                  `<button onclick="insertBookmark('${cleanTitle}',${userId})">즐겨찾기</button>`}
               </span>
             </div>`,
         });
