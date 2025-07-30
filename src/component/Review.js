@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Header from './Header'
 import { useParams } from 'react-router-dom'
 import { UserContext } from '../context/UserContext';
 
@@ -13,7 +12,7 @@ export default function Review() {
             fetch('http://localhost/selectReview?title='+title.title,{method: "get"})
             .then((res)=>(res.json()))
             .then((data)=>{setReviewList(data)})
-    },[]);
+    },[title.title]);
 
     // 사진을 업로드하기위해 json방식이 아닌 formData 형식으로 요청
     function insertReview(){
@@ -30,6 +29,7 @@ export default function Review() {
         }).then((res)=>{
             if(res.ok){
                 alert('등록성공');
+                window.location.reload();
             }else{
                 console.log(review.file);
                 alert('등록실패');
