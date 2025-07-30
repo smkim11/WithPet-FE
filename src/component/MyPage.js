@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Header from './Header'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 export default function MyPage() {
     const{userId} = useParams();
@@ -60,7 +60,8 @@ export default function MyPage() {
                     </tr>
                 </tbody>
             </table>
-        </div>
+         <Link to={`/UpdateInfo/${userId}`}>정보수정</Link>
+    </div>
     )
 }
  
