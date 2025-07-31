@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import Header from './Header'
 import { Link, useParams } from 'react-router-dom'
 
 export default function MyPage() {
@@ -60,7 +59,7 @@ export default function MyPage() {
                     </tr>
                 </tbody>
             </table>
-         <Link to={`/UpdateInfo/${userId}`}>정보수정</Link>
+         <Link to={`/UpdateInfo/${userId}`}>개인정보수정</Link>
     </div>
     )
 }
