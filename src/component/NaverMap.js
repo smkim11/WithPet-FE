@@ -62,7 +62,9 @@ export default function NaverMap({ items }) {
   useEffect(() => {
   fetch('http://localhost/selectStoreIdByUserId?userId='+userId)
     .then(res => res.json())
-    .then(data => setBookmarkedStores(data)); // [1, 2, 3, 4] 형태
+    .then(data => {
+      console.log("받은 데이터:", data);
+      setBookmarkedStores(data)}); // [1, 2, 3, 4] 형태
   }, [userId]);
 
   // 가게 즐겨찾기 저장
@@ -73,7 +75,16 @@ export default function NaverMap({ items }) {
         fetch("http://localhost/insertBookmark",{
         method:"post", headers:{"Content-Type":"application/json"},
         body: JSON.stringify({userId:userId,storeId:data})
-        });{setStoreId(data)}
+        }).then((res)=>{
+          if(res.ok){
+            // 등록 후 새로고침
+            window.location.reload();
+          }else{
+              alert('등록실패');
+          }
+        });
+        {setStoreId(data)}
+
     })
   }
 
