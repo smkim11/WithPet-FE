@@ -25,7 +25,7 @@ export default function Bookmark() {
                     {
                         storeList.map((list)=>(
                             <tr>
-                                <td>{list.title}</td>
+                                <td><a href='{list.link}'>{list.title}</a></td>
                                 <td>{list.category}</td>
                                 <td>{list.address}</td>
                             </tr>
