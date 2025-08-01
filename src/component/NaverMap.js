@@ -130,7 +130,12 @@ export default function NaverMap({ items }) {
       .then(res => res.json())
       .then(storeId => {
         const isBookmarked = bookmarkedStores.includes(storeId);
-
+      fetch('http://localhost/selectRatingAvg?storeId='+storeId)
+          .then(res => res.json())
+          .then(data => {
+            console.log("받은 데이터:", data);
+           const ratingAvg=data.avg;
+           const cnt = data.cnt;
         // 마커 아이콘 조건
         const markerIcon = isBookmarked
           ? 'https://example.com/star-icon.png'
@@ -148,7 +153,9 @@ export default function NaverMap({ items }) {
             <div style="padding:10px;">
               <strong>${cleanTitle}</strong><br/>
               <span>${item.category}</span><br/>
-              <span>${item.address}</span><br/>
+              <span>${item.address}</span>
+              ${ratingAvg === '' ? `<br/>` : 
+                `<br/><span>⭐ ${ratingAvg}/5.0 (${cnt}명)</span><br/>`}
               <a href="${item.link}" target="_blank">상세정보</a><br/>
               <a href="/Review/${cleanTitle}">리뷰</a><br/>
               <span style="color:${isBookmarked ? 'gold' : 'gray'};">
@@ -157,7 +164,7 @@ export default function NaverMap({ items }) {
               </span>
             </div>`,
         });
-
+        
         window.naver.maps.Event.addListener(marker, "click", () => {
           infoWindow.open(mapInstance.current, marker);
         });
@@ -169,6 +176,7 @@ export default function NaverMap({ items }) {
         }
 
         markersRef.current.push(marker);
+        });
       });
   });
 }, [items, bookmarkedStores]);
