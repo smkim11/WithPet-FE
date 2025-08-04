@@ -133,9 +133,10 @@ export default function NaverMap({ items }) {
       fetch('http://localhost/selectRatingAvg?storeId='+storeId)
           .then(res => res.json())
           .then(data => {
-            console.log("받은 데이터:", data);
-           const ratingAvg=data.avg;
-           const cnt = data.cnt;
+            // 받은 값이 배열이고 값이 null이 아니면 받아온 값 null 이면 ''이나 0
+            const ratingData = Array.isArray(data) ? data[0] : data;
+            const ratingAvg = ratingData?.avg ?? '';
+            const cnt = ratingData?.cnt ?? 0;
         // 마커 아이콘 조건
         const markerIcon = isBookmarked
           ? 'https://example.com/star-icon.png'
@@ -155,7 +156,8 @@ export default function NaverMap({ items }) {
               <span>${item.category}</span><br/>
               <span>${item.address}</span>
               ${ratingAvg === '' ? `<br/>` : 
-                `<br/><span>⭐ ${ratingAvg}/5.0 (${cnt}명)</span><br/>`}
+                                // 평점평균 소수점 한자리까지만 
+                `<br/><span>⭐ ${(ratingAvg).toFixed(1)}/5.0 (${cnt}명)</span><br/>`}
               <a href="${item.link}" target="_blank">상세정보</a><br/>
               <a href="/Review/${cleanTitle}">리뷰</a><br/>
               <span style="color:${isBookmarked ? 'gold' : 'gray'};">
