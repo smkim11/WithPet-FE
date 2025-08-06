@@ -110,7 +110,7 @@ export default function NaverMap({ items }) {
         }
     }
 
-    window.startRoute = async function(destLat, destLng) {
+  window.startRoute = async function(destLat, destLng) {
       const startLat = userLocationRef.current?.lat();
       const startLng = userLocationRef.current?.lng();
 
@@ -126,10 +126,12 @@ export default function NaverMap({ items }) {
         const res = await fetch(
           `http://localhost/directions?start=${start}&goal=${goal}`,
         );
-
+        console.log("응답 상태코드:", res.status);  
+        
         const data = await res.json();
-        const path = data.routes[0].path;
-
+        console.log("받은 경로 응답 데이터:", data);
+        const path = data.route?.traoptimal?.[0]?.path;
+        
         // 경로 좌표 배열로 변환
         const latLngPath = path.map(([lng, lat]) => new window.naver.maps.LatLng(lat, lng));
 
