@@ -109,56 +109,81 @@ export default function NaverMap({ items }) {
             alert('삭제취소');
         }
     }
-
+  
+  // 현재위치에서 가게까지 경로및 시간
   window.startRoute = async function(destLat, destLng) {
-      const startLat = userLocationRef.current?.lat();
-      const startLng = userLocationRef.current?.lng();
+  const startLat = userLocationRef.current?.lat();
+  const startLng = userLocationRef.current?.lng();
 
-      if (!startLat || !startLng) {
-        alert("현재 위치를 확인할 수 없습니다.");
-        return;
-      }
+  if (!startLat || !startLng) {
+    alert("현재 위치를 확인할 수 없습니다.");
+    return;
+  }
 
-      const start = `${startLng},${startLat}`;
-      const goal = `${destLng},${destLat}`;
+  const start = `${startLng},${startLat}`;
+  const goal = `${destLng},${destLat}`;
 
-      try {
-        const res = await fetch(
-          `http://localhost/directions?start=${start}&goal=${goal}`,
-        );
-        console.log("응답 상태코드:", res.status);  
-        
-        const data = await res.json();
-        console.log("받은 경로 응답 데이터:", data);
-        const path = data.route?.traoptimal?.[0]?.path;
-        
-        // 경로 좌표 배열로 변환
-        const latLngPath = path.map(([lng, lat]) => new window.naver.maps.LatLng(lat, lng));
+  try {
+    const res = await fetch(
+      `http://localhost/directions?start=${start}&goal=${goal}`,
+    );
+    console.log("응답 상태코드:", res.status);  
+    
+    const data = await res.json();
+    console.log("받은 경로 응답 데이터:", data);
+    const path = data.route?.traoptimal?.[0]?.path;
+    
+    // 경로 좌표 배열로 변환
+    const latLngPath = path.map(([lng, lat]) => new window.naver.maps.LatLng(lat, lng));
 
-        // 기존 경로 있으면 제거
-        if (routePolyline) {
-          routePolyline.setMap(null);
-        }
+    // 기존 경로 있으면 제거
+    if (routePolyline) {
+      routePolyline.setMap(null);
+    }
 
-        const newLine = new window.naver.maps.Polyline({
-          map: mapInstance.current,
-          path: latLngPath,
-          strokeColor: "#007AFF",
-          strokeWeight: 6,
-        });
+    const newLine = new window.naver.maps.Polyline({
+      map: mapInstance.current,
+      path: latLngPath,
+      strokeColor: "#007AFF",
+      strokeWeight: 6,
+    });
 
-        setRoutePolyline(newLine);
+    setRoutePolyline(newLine);
 
     // 경로 전체 보기
     const bounds = new window.naver.maps.LatLngBounds();
     latLngPath.forEach((latLng) => bounds.extend(latLng));
     mapInstance.current.fitBounds(bounds);
 
+    // 거리/시간 정보 표시
+    const routeData = data.route?.traoptimal?.[0];
+    const summary = routeData?.summary;
+
+    if (summary) {
+      const distanceKm = (summary.distance / 1000).toFixed(1);
+      const durationMin = Math.ceil(summary.duration / 60);
+      const midIndex = Math.floor(latLngPath.length / 2);
+      const midPoint = latLngPath[midIndex];
+
+      const infoWindow = new window.naver.maps.InfoWindow({
+        content: `
+          <div style="padding:8px; font-size:14px;">
+            🚗 거리: ${distanceKm}km<br/>
+            ⏱ 시간: 약 ${durationMin}분
+          </div>`,
+        position: midPoint,
+        pixelOffset: new window.naver.maps.Point(0, -20),
+      });
+
+      infoWindow.open(mapInstance.current);
+    }
+
   } catch (error) {
     console.error("경로 요청 실패:", error);
     alert("경로 요청 중 오류가 발생했습니다.");
   }
 };
+
 
   // 제목에 붙어있는 불필요한 문자들을 제거
   function stripHtmlTags(str) {
