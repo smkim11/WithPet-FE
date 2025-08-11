@@ -6,7 +6,6 @@ export default function SearchPage() {
     const { user } = useContext(UserContext);
     const[keyword, setKeyWord] = useState('');
     const[items,setItems] = useState([]);
-
     // 검색시 검색된 가게정보 저장
     function searchPlace(keyword) {
         fetch(`http://localhost/search/${encodeURIComponent(keyword)}`, {
@@ -46,81 +45,53 @@ export default function SearchPage() {
         searchPlace(fullKeyword);
     }
     return (
-        <div>
-            <h1>검색</h1>
-            <div>
-                검색:<input type="text" onChange={(e)=>setKeyWord(e.target.value+'애견동반')}/>
-                <button onClick={() => searchPlace(keyword+'식당')}>검색</button>
-            </div>
-            <NaverMap items={items}/>
-            
-            {
-                items.map((c)=>(
-                    <div key={c.title}>
-                        {c.title}
+        <div className="flex justify-center bg-gray-50 pt-3 pb-2">
+            <div className="w-full max-w-6xl px-6">
+                <h1 className="text-3xl font-bold text-gray-800 mb-4 text-center">검색</h1>
+
+                <div className="flex justify-center mb-6 space-x-3">
+                    <input
+                        type="text"
+                        onChange={(e) => setKeyWord(e.target.value + ' 애견동반')}
+                        placeholder="검색어를 입력하세요"
+                        className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    />
+                    <button
+                        onClick={() => searchPlace(keyword + ' 식당')}
+                        className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 rounded-lg transition"
+                    >
+                        검색
+                    </button>
+                </div>
+
+                <NaverMap items={items} />
+
+                {/* 화면작아지면 가로스크롤 */}
+                <div className="mt-8 overflow-x-auto max-w-5xl mx-auto">
+                    <div className="flex space-x-4">
+                        {[
+                            { key: '양식', img: 'image/004-hamburger.png', label: '양식' },
+                            { key: '한식', img: 'image/006-bibimbap.png', label: '한식' },
+                            { key: '일식', img: 'image/005-sushi.png', label: '일식' },
+                            { key: '중화요리', img: 'image/007-buns-1.png', label: '중식' },
+                            { key: '카페', img: 'image/002-coffee-1.png', label: '카페' },
+                            { key: '분식', img: 'image/004-tteokbokki.png', label: '분식' },
+                            { key: '해산물', img: 'image/005-lobster.png', label: '해산물' },
+                            { key: '베트남', img: 'image/002-noodle.png', label: '베트남' },
+                            { key: '태국', img: 'image/001-thai-food.png', label: '태국' },
+                            { key: '멕시코', img: 'image/003-taco.png', label: '멕시코' },
+                        ].map(({ key, img, label }) => (
+                            <button
+                                key={key}
+                                onClick={() => handleCategoryClick(key)}
+                                className="flex flex-col items-center bg-white p-3 rounded-lg shadow cursor-pointer hover:shadow-lg transition min-w-[80px]"
+                                type="button"
+                            >
+                                <img src={img} alt={label} className="w-12 h-12 mb-1" />
+                                <span className="text-sm text-gray-700 whitespace-nowrap">{label}</span>
+                            </button>
+                        ))}
                     </div>
-                ))
-            }
-            <div className="button-container">
-                <div className="submit-form" data-query="양식" onClick={()=>handleCategoryClick('양식')}>
-                    <figure>
-                        <img src="image/004-hamburger.png" alt="양식"/>
-                        <figcaption>양식</figcaption>
-                    </figure>
-                </div>
-                <div className="submit-form" data-query="한식" onClick={()=>handleCategoryClick('한식')}>
-                    <figure>
-                        <img src="image/006-bibimbap.png" alt="한식"/>
-                        <figcaption>한식</figcaption>
-                    </figure>
-                </div>
-                <div className="submit-form" data-query="일식" onClick={()=>handleCategoryClick('일식')}>
-                    <figure>
-                        <img src="image/005-sushi.png" alt="일식"/>
-                        <figcaption>일식</figcaption>
-                    </figure>
-                </div>
-                <div className="submit-form" data-query="중화요리" onClick={()=>handleCategoryClick('중화요리')}>
-                    <figure>
-                        <img src="image/007-buns-1.png" alt="중화요리"/>
-                        <figcaption>중식</figcaption>
-                    </figure>
-                </div>
-                <div className="submit-form" data-query="카페" onClick={()=>handleCategoryClick('카페')}>
-                    <figure>
-                        <img src="image/002-coffee-1.png" alt="카페"/>
-                        <figcaption>카페</figcaption>
-                    </figure>
-                </div>
-                <div className="submit-form" data-query="분식" onClick={()=>handleCategoryClick('분식')}>
-                    <figure>
-                        <img src="image/004-tteokbokki.png" alt="분식"/>
-                        <figcaption>분식</figcaption>
-                    </figure>
-                </div>
-                <div className="submit-form" data-query="해산물" onClick={()=>handleCategoryClick('해산물')}>
-                    <figure>
-                        <img src="image/005-lobster.png" alt="해산물"/>
-                        <figcaption>해산물</figcaption>
-                    </figure>
-                </div>
-                <div className="submit-form" data-query="베트남" onClick={()=>handleCategoryClick('베트남')}>
-                    <figure>
-                        <img src="image/002-noodle.png" alt="베트남"/>
-                        <figcaption>베트남</figcaption>
-                    </figure>
-                </div>
-                <div className="submit-form" data-query="태국" onClick={()=>handleCategoryClick('태국')}>
-                    <figure>
-                        <img src="image/001-thai-food.png" alt="태국"/>
-                        <figcaption>태국</figcaption>
-                    </figure>
-                </div>
-                <div className="submit-form" data-query="멕시코" onClick={()=>handleCategoryClick('멕시코')}>
-                    <figure>
-                        <img src="image/003-taco.png" alt="멕시코"/>
-                        <figcaption>멕시코</figcaption>
-                    </figure>
                 </div>
             </div>
         </div>
