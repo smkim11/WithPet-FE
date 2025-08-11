@@ -18,9 +18,9 @@ export default function MainPage() {
     },[])
 
     return (
-        <div className="min-h-screen bg-gray-50 py-10">
-            <div className="max-w-6xl mx-auto px-6">
-                <h1 className="text-3xl font-bold text-gray-800 mb-12 text-center">메인페이지</h1>
+        <div className="flex justify-center bg-gray-50 pt-10 pb-4">
+            <div className="w-full max-w-6xl px-6">
+                <h1 className="text-3xl font-bold text-gray-800 mb-12 text-center">WITH PET</h1>
 
                 <div className="flex flex-col md:flex-row md:space-x-12 space-y-8 md:space-y-0">
                 {/* 즐겨찾기 순위 */}
@@ -39,7 +39,7 @@ export default function MainPage() {
                         {bookmarkRank.map((item, idx) => (
                         <tr
                             key={idx}
-                            className="even:bg-gray-100 hover:bg-orange-100 transition cursor-pointer"
+                            className="hover:bg-orange-100 transition cursor-pointer"
                         >
                             <td className="px-4 py-2">{item.ranking}</td>
                             <td className="px-4 py-2 truncate">{item.title}</td>
@@ -65,7 +65,7 @@ export default function MainPage() {
                         {reviewRank.map((item, idx) => (
                         <tr
                             key={idx}
-                            className="even:bg-gray-100 hover:bg-orange-100 transition cursor-pointer"
+                            className="hover:bg-orange-100 transition cursor-pointer"
                         >
                             <td className="px-4 py-2">{item.ranking}</td>
                             <td className="px-4 py-2 truncate">{item.title}</td>
