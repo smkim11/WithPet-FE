@@ -190,18 +190,29 @@ export default function NaverMap({ items }) {
     if (!str) return '';
     return str.replace(/<[^>]*>?/gm, '');
   }   
+
+  const categoryIcons = {
+    '양식': '🍔',
+    '한식': '🍚',
+    '일식': '🍣',
+    '중화요리': '🥟',
+    '카페': '☕',
+    '분식': '🍙',
+    '해산물': '🦞',
+    '베트남': '🍜',
+    '태국': '🍛',
+    '멕시코': '🌮'
+  };
   // items 바뀔 때마다 마커 다시 그림
   useEffect(() => {
   if (!window.naver || !mapInstance.current || !items || items.length === 0) return;
-
-  markersRef.current.forEach(marker => marker.setMap(null));
-  markersRef.current = [];
 
   items.forEach((item, index) => {
     const mapx = parseFloat(item.mapx.substring(0, 3) + '.' + item.mapx.substring(3));
     const mapy = parseFloat(item.mapy.substring(0, 2) + '.' + item.mapy.substring(2));
     const position = new window.naver.maps.LatLng(mapy, mapx);
     const cleanTitle = stripHtmlTags(item.title);
+    const category = item.category;
 
     // 먼저 storeId 조회
     fetch(`http://localhost/selectStoreId?title=${cleanTitle}`)
@@ -211,52 +222,53 @@ export default function NaverMap({ items }) {
       fetch('http://localhost/selectRatingAvg?storeId='+storeId)
           .then(res => res.json())
           .then(data => {
-            // 받은 값이 배열이고 값이 null이 아니면 받아온 값 null 이면 ''이나 0
+            // 받은 값이 배열이고 값이 null이 아니면 받아온 값, null 이면 ''이나 0
             const ratingData = Array.isArray(data) ? data[0] : data;
             const ratingAvg = ratingData?.avg ?? '';
             const cnt = ratingData?.cnt ?? 0;
-        // 마커 아이콘 조건
-        const markerIcon = isBookmarked
-          ? 'https://example.com/star-icon.png'
-          : null; // 기본 마커
+            const iconText = categoryIcons[category] || '🍴';
 
-        const marker = new window.naver.maps.Marker({
-          position: position,
-          map: mapInstance.current,
-          title: cleanTitle,
-          icon: markerIcon,
-        });
+            const marker = new window.naver.maps.Marker({
+              position: position,
+              map: mapInstance.current,
+              title: cleanTitle,
+              icon: {
+                content: `<div style="font-size:24px; text-align:center;">${iconText}</div>`,
+                size: new window.naver.maps.Size(30, 30),
+                anchor: new window.naver.maps.Point(15, 15)
+              }
+            });
 
-        const infoWindow = new window.naver.maps.InfoWindow({
-          content: `
-            <div style="padding:10px;">
-              <strong>${cleanTitle}</strong><br/>
-              <span>${item.category}</span><br/>
-              <span>${item.address}</span>
-              ${ratingAvg === '' ? `<br/>` : 
-                                // 평점평균 소수점 한자리까지만 
-                `<br/><span>⭐ ${(ratingAvg).toFixed(1)}/5.0 (${cnt}명)</span><br/>`}
-              <a href="${item.link}" target="_blank">상세정보</a><br/>
-              <a href="/Review/${cleanTitle}">리뷰</a><br/>
-              <span style="color:${isBookmarked ? 'gold' : 'gray'};">
-                ${isBookmarked ? `<button onclick="deleteBookmark('${userId}',${storeId})">⭐ 즐겨찾기됨</button>` : 
-                  `<button onclick="insertBookmark('${cleanTitle}',${userId})">즐겨찾기</button>`}
-              </span>
-              <button onclick="window.startRoute('${mapy}', '${mapx}')">🚗 길찾기</button>
-            </div>`,
-        });
-        
-        window.naver.maps.Event.addListener(marker, "click", () => {
-          infoWindow.open(mapInstance.current, marker);
-        });
+            const infoWindow = new window.naver.maps.InfoWindow({
+              content: `
+                <div style="padding:10px;">
+                  <strong>${cleanTitle}</strong><br/>
+                  <span>${item.category}</span><br/>
+                  <span>${item.address}</span>
+                  ${ratingAvg === '' ? `<br/>` : 
+                                    // 평점평균 소수점 한자리까지만 
+                    `<br/><span>⭐ ${(ratingAvg).toFixed(1)}/5.0 (${cnt}명)</span><br/>`}
+                  <a href="${item.link}" target="_blank">상세정보</a><br/>
+                  <a href="/Review/${cleanTitle}">리뷰</a><br/>
+                  <span style="color:${isBookmarked ? 'gold' : 'gray'};">
+                    ${isBookmarked ? `<button onclick="deleteBookmark('${userId}',${storeId})">⭐ 즐겨찾기됨</button>` : 
+                      `<button onclick="insertBookmark('${cleanTitle}',${userId})">즐겨찾기</button>`}
+                  </span>
+                  <button onclick="window.startRoute('${mapy}', '${mapx}')">🚗 길찾기</button>
+                </div>`,
+            });
+            
+            window.naver.maps.Event.addListener(marker, "click", () => {
+              infoWindow.open(mapInstance.current, marker);
+            });
 
-        // 첫 번째 마커 자동 열기
-        if (index === 0) {
-          mapInstance.current.setCenter(position);
-          infoWindow.open(mapInstance.current, marker);
-        }
+            // 첫 번째 마커 자동 열기
+            if (index === 0) {
+              mapInstance.current.setCenter(position);
+              infoWindow.open(mapInstance.current, marker);
+            }
 
-        markersRef.current.push(marker);
+            markersRef.current.push(marker);
         });
       });
   });
