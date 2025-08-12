@@ -30,30 +30,54 @@ export default function Bookmark() {
     }
 
     return (
-        <div>
-            <h1>즐겨찾기</h1>
-            <table>
-                <tbody>
-                    <tr>
-                        <th>가게</th>
-                        <th>종류</th>
-                        <th>위치</th>
-                        <th></th>
-                    </tr>
-                </tbody>
-                <tbody>
-                    {
-                        storeList.map((list)=>(
-                            <tr>
-                                <td><a href={list.link}>{list.title}</a></td>
-                                <td>{list.category}</td>
-                                <td>{list.address}</td>
-                                <td><button onClick={()=>deleteBookmark(userId,list.storeId)}>삭제</button></td>
+        <div className="flex justify-center bg-gray-50 pt-10 pb-4">
+            <div className="w-full max-w-6xl px-6">
+                <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+                    즐겨찾기
+                </h1>
+
+                <div className="bg-white rounded-lg shadow p-6">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="bg-gray-800 text-white">
+                                <th className="px-4 py-3">가게</th>
+                                <th className="px-4 py-3">종류</th>
+                                <th className="px-4 py-3">위치</th>
+                                <th className="px-4 py-3 w-24"></th>
                             </tr>
-                        ))
-                    }
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                            {storeList.map((list, idx) => (
+                                <tr
+                                    key={idx}
+                                    className="hover:bg-orange-100 transition cursor-pointer"
+                                >
+                                    <td className="px-4 py-3">
+                                        <a
+                                            href={list.link}
+                                            className="text-orange-500 hover:underline"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            {list.title}
+                                        </a>
+                                    </td>
+                                    <td className="px-4 py-3">{list.category}</td>
+                                    <td className="px-4 py-3">{list.address}</td>
+                                    <td className="px-4 py-3">
+                                        <button
+                                            onClick={() => deleteBookmark(userId, list.storeId)}
+                                            className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded transition"
+                                        >
+                                            삭제
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     )
 }
