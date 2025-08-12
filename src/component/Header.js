@@ -35,7 +35,7 @@ export default function Header() {
           <img
             src="/image/logo1.png"
             alt="With Pet 로고"
-            className="h-12 cursor-pointer w-30 h-40"
+            className="h-12 cursor-pointer w-25 h-20"
           />
         </Link>
       </div>
