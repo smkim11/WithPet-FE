@@ -32,7 +32,7 @@ export default function Login() {
         });
     };
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md border-t-4 border-orange-400">
         <div className="flex justify-center mb-6">
           <img

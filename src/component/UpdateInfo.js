@@ -28,29 +28,56 @@ export default function UpdateInfo() {
     }
    
     return (
-        <div>
-            <h1>개인정보수정</h1>
-            <table>
-                <tbody>
-                    <tr>
-                        <th>이름</th>
-                        <td><input type="text" name="name" value={userOne.name} onChange={(e)=>(setUserOne({...userOne,name:e.target.value}))}/></td>
-                    </tr>
-                </tbody>
-                <tbody>
-                    <tr>
-                        <th>생년월일</th>
-                        <td><input type="date" name="birth" value={userOne.birth} onChange={(e)=>(setUserOne({...userOne,birth:e.target.value}))}/></td>
-                    </tr>
-                </tbody>
-                <tbody>
-                    <tr>
-                        <th>이메일</th>
-                        <td><input type="text" name="email" value={userOne.email} onChange={(e)=>(setUserOne({...userOne,email:e.target.value}))}/></td>
-                    </tr>
-                </tbody>
-            </table>
-            <button onClick={edit}>수정</button>
+        <div className="flex justify-center bg-gray-50 pt-16 pb-8">
+            <div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-md border-t-4 border-orange-400">
+                <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+                    개인정보 수정
+                </h1>
+
+                <div className="space-y-6">
+                    <div>
+                        <label className="block text-gray-700 font-medium mb-2">이름</label>
+                        <input
+                            type="text"
+                            name="name"
+                            value={userOne.name || ""}
+                            onChange={(e) => setUserOne({ ...userOne, name: e.target.value })}
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-gray-700 font-medium mb-2">생년월일</label>
+                        <input
+                            type="date"
+                            name="birth"
+                            value={userOne.birth || ""}
+                            onChange={(e) => setUserOne({ ...userOne, birth: e.target.value })}
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-gray-700 font-medium mb-2">이메일</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={userOne.email || ""}
+                            onChange={(e) => setUserOne({ ...userOne, email: e.target.value })}
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-400 focus:outline-none"
+                        />
+                    </div>
+
+                    <div className="flex justify-end">
+                        <button
+                            onClick={edit}
+                            className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-6 rounded-lg transition"
+                        >
+                            수정
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }
